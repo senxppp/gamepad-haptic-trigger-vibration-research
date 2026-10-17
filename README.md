@@ -1,58 +1,35 @@
-# 手柄力反馈扳机综合研究
+# Gamepad Haptic / Force-Feedback / Adaptive-Trigger Research
 
-> Comprehensive Research on Gamepad Force-Feedback / Adaptive Triggers
+> 手柄力反馈 · 自适应扳机 · 触觉震动 —— 综合研究与工程实现
+> A consolidated research + engineering repo for gamepad force-feedback, adaptive triggers and haptic feedback.
 
-跨厂商「自适应扳机 / 力反馈」协议的结构化研究。目标不是复刻任何一家闭源产品，
-而是**提炼一套通用的分析方法与协议结构结论**，为「游戏手感语义 → 厂商原生指令」
-的映射建立可复用的工程基础。
+本仓库合并了三部分工作：跨厂商协议方法论、触觉/扳机研究工程、音频转震动中间层。
+This repo consolidates three tracks: cross-vendor protocol methodology, haptics/trigger engineering, and an audio-to-vibration middle layer.
 
-## 这个项目做了什么
+## 目录结构 / Repository Layout
 
-- **纯静态逆向**：不运行任何厂商闭源程序，仅靠解析其 Electron/asar 配置界面与
-  配置下发协议，提取"力反馈扳机"的配置结构。
-- **配置 blob 字段级偏移还原**：通过复刻厂商 UI 侧的位域（bit-packing）打包器，
-  在不需要硬件、不运行程序的前提下，精确算出每个配置字段在传输缓冲区里的字节偏移。
-- **跨厂商协议对照**：把"阻尼 / 震动 / 射击"等手感语义，与不同厂商的原生指令
-  编号体系对齐，得到一张可扩展的映射表。
-
-## 目录结构
-
-```
-docs/
-  01-术语与代号表.md            代号 ↔ 真实品牌（仅仓库外备忘录持有，仓库内只用代号）
-  02-方法论-静态逆向手柄配置协议.md   不跑程序也能还原配置字段偏移
-  03-自适应扳机协议综述.md        阻尼/震动/射击等语义的通用建模
-  04-厂商甲-网页驱动HID协议.md     某厂商网页驱动 HID 帧格式（结构层面）
-  05-厂商乙-力反馈扳机协议.md      某厂商力反馈扳机的 720 字节配置 blob 与偏移
-tools/
-  bitpack_offset_calc.py       自包含的比特打包偏移计算器（合成示例 schema）
-```
-
-## 术语与代号
-
-为保护相关厂商，本仓库**不出现任何真实品牌名**，一律用代号。完整对照见
-[`docs/01-术语与代号表.md`](docs/01-术语与代号表.md)。速览：
-
-| 代号 | 含义 |
+| 路径 / Path | 内容 / Content |
 |---|---|
-| 厂商甲 | 采用"网页驱动"方案的某国产手柄厂商 |
-| 厂商乙 | 采用"力反馈扳机"方案的某国产手柄厂商 |
-| 目标手柄α | 本项目最初做驱动兼容改造的目标手柄 |
-| 手柄β | 厂商乙带自适应扳机的一款手柄 |
-| 参考手柄 | 某主流主机手柄（作对照基准） |
-| 音频触觉引擎 | 将系统音频实时转成触觉反馈的引擎 |
+| `docs/` | 协议方法论与跨厂商结构综述（5 篇）/ protocol methodology & cross-vendor overview |
+| `tools/bitpack_offset_calc.py` | 位域打包偏移计算器 / bit-packing offset calculator |
+| `haptics-research/` | 触觉与扳机研究工程：DS 协议翻译、虚拟 DualSense、抓帧与分析脚本、findings |
+| `haptic-assistant/` | 音频转震动中间层（震动小助手）：音频直驱震动 + 扳机动作对齐 |
 
-## 方法一句话总结
+### `docs/` — 协议方法论 / Protocol Methodology
 
-> 把厂商配置界面的 **schema 对象**（每个字段标注占多少 bit）+ **位域打包函数**
-> 复刻到 Python，跑一遍就能得到每个字段在 720 字节配置 blob 里的绝对字节偏移——
-> 比反编译原生二进制快几个数量级，且不需要硬件。
+- `01-术语与代号表.md` — 术语与代号 / glossary
+- `02-方法论-静态逆向手柄配置协议.md` — 不跑程序也能还原配置字段偏移 / static offset recovery
+- `03-自适应扳机协议综述.md` — 阻尼/振动/射击/锁定/常规 的通用建模 / semantic modeling
+- `04-厂商甲-网页驱动HID协议.md` — 网页驱动 HID 帧结构 / WebHID frame format
+- `05-厂商乙-力反馈扳机协议.md` — 720B 配置 blob 与扳机三元组偏移 / blob layout & offsets
 
-## 免责声明
+## 核心结论 / Key Takeaways
 
-1. 本项目仅记录**分析方法**与**协议结构层面**的结论，**不包含**任何厂商闭源程序的
-   二进制、源码、字符串转储、反汇编产物或屏幕抓取内容。
-2. 所有品牌均已脱敏为代号；文中出现的协议细节均为结构描述，不涉及任何可被直接用于
-   破解、绕过授权或侵害版权的具体实现。
-3. 仅供**研究与教育用途**。由此产生的任何使用后果由使用者自行承担。
-4. 若任何权利方认为本仓库内容不当，请联系作者下架。
+- **语义统一建模 / Unified semantics**：阻尼、振动、射击、锁定、常规五类扳机语义可跨厂商映射；中间层只认语义，输出时查厂商表。
+- **纯静态偏移还原 / Static offset recovery**：复刻 UI 侧位域打包器，零硬件即可算出配置字段在 blob 里的字节偏移，并与厂商自声明长度交叉验证。
+- **音频→震动实时中间层 / Real-time audio-to-haptics**：onset + 不应期策略，左右马达差异化输出，显著提升手感一致性。
+
+## 说明 / Notes
+
+- 内容用于研究与教育目的 / for research and education.
+- 不含任何第三方闭源程序的二进制、源码或字符串转储 / no third-party closed-source binaries or dumps.
