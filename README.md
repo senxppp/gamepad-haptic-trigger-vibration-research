@@ -4,6 +4,21 @@
 > A consolidated research + engineering repo for gamepad force-feedback, adaptive triggers and haptic feedback.
 
 本仓库合并了三部分工作：跨厂商协议方法论、触觉/扳机研究工程、音频转震动中间层。
+
+## ⚠️ 项目状态（2026-11-15 更新）
+
+`haptic-assistant/`（震动小助手）是**上一代实现**，已停止维护。新一代在这里：
+
+👉 **[apex-haptic-bridge](https://github.com/senxppp/apex-haptic-bridge)** —— USB/IP 虚拟设备 + 截官方引擎的包络流，
+重写扳机渲染，带写入节流 / 停帧自愈 / 热插拔守护 / 160 条离线回归。
+
+一句话差别：上一代**自己解析音频、自己算驱动值**，全链路自己扛；
+新一代把解析交给厂商引擎（它调得更好），只负责**设备间翻译**和**别卡死、别掉线**。
+
+本仓库的 `docs/`（协议方法论 5 篇）**依然有效**，是新项目的理论来源，请照常参考。
+
+---
+
 This repo consolidates three tracks: cross-vendor protocol methodology, haptics/trigger engineering, and an audio-to-vibration middle layer.
 
 ## 目录结构 / Repository Layout
