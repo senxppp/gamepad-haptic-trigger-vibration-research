@@ -5,6 +5,9 @@
 
 本仓库合并了三部分工作：跨厂商协议方法论、触觉/扳机研究工程、音频转震动中间层。
 
+
+This repo consolidates three tracks: cross-vendor protocol methodology, haptics/trigger engineering, and an audio-to-vibration middle layer.
+
 ## ⚠️ 项目状态（2026-11-15 更新）
 
 `haptic-assistant/`（震动小助手）是**上一代实现**，已停止维护。新一代在这里：
@@ -18,8 +21,6 @@
 本仓库的 `docs/`（协议方法论 5 篇）**依然有效**，是新项目的理论来源，请照常参考。
 
 ---
-
-This repo consolidates three tracks: cross-vendor protocol methodology, haptics/trigger engineering, and an audio-to-vibration middle layer.
 
 ## 目录结构 / Repository Layout
 
